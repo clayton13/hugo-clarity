@@ -1,3 +1,14 @@
+
+{{/* Determine thumbnail image path, allow for post asset folders  */}}
+{{if isset .Params "thumbnail" }}
+  {{/* Finds file and accounts for language */}}
+  {{ if .Resources.GetMatch .Params.thumbnail }}
+    {{ .Scratch.Set "thumb_path" (.Resources.GetMatch .Params.thumbnail).Permalink }}
+  {{ else if (fileExists (path.Join "static" .Params.thumbnail)) }}
+    {{ .Scratch.Set "thumb_path" .Params.thumbnail }}
+  {{ end }}
+{{ end }}
+
 <li class="post_item">
   <div class="excerpt">
     <div class="excerpt_header">
@@ -6,7 +17,7 @@
       </h3>
       {{ partial "post-meta" . }}
     </div>
-    {{- with .Params.thumbnail }}
+    {{- with ( .Scratch.Get "thumb_path") }}
     <div class="excerpt_footer partition">
       <div class="excerpt_thumbnail">
         <img src='{{ if (hasPrefix . "http") }}{{ . }}{{ else }}{{ absURL . }}{{ end }}'>
